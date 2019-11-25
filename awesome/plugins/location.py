@@ -46,7 +46,7 @@ async def get_weather_of_city(city: str) -> str:
     # 实际应用中，这里应该调用返回真实数据的天气 API，并拼接成天气预报内容
     return f'{city}的天气是……'
 
-@on_natural_language(keywords={'天气'},only_to_me=False)
+@on_natural_language(keywords={'名字'},only_to_me=False)
 async def _(session: NLPSession):
     # 返回意图命令，前两个参数必填，分别表示置信度和意图命令名
     return IntentCommand(90.0, 'location')
