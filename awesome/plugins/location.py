@@ -1,11 +1,11 @@
 from nonebot import on_command, CommandSession
 from nonebot import on_natural_language, NLPSession, IntentCommand
-import json
+import pdb
 
 
 # on_command 装饰器将函数声明为一个命令处理器
 # 这里 weather 为命令的名字，同时允许使用别名「天气」「天气预报」「查天气」
-@on_command('weather', aliases=('天气', '天气预报', '查天气'))
+@on_command('name', aliases=('名字', '天气预报', '查天气'))
 async def location(session: CommandSession):
     # 从会话状态（session.state）中获取城市名称（city），如果当前不存在，则询问用户
     # city = session.get('city', prompt='你想查询哪个城市的天气呢？')
@@ -13,9 +13,9 @@ async def location(session: CommandSession):
     # weather_report = await get_weather_of_city(city)
     # 向用户发送天气预报
     data=session.ctx
-    data=json.loads(data)
+    pdb.set_trace()
     name=data.get('user_id')
-    name_report="您的QQ号是"+name
+    name_report="您的QQ号是"+str(name)
     await session.send(name_report)
 
 
@@ -48,7 +48,7 @@ async def get_weather_of_city(city: str) -> str:
     # 实际应用中，这里应该调用返回真实数据的天气 API，并拼接成天气预报内容
     return f'{city}的天气是……'
 
-@on_natural_language(keywords={'天气'},only_to_me=False)
+@on_natural_language(keywords={'名字'},only_to_me=False)
 async def _(session: NLPSession):
     # 返回意图命令，前两个参数必填，分别表示置信度和意图命令名
     return IntentCommand(90.0, 'location')
