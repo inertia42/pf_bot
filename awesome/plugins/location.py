@@ -12,10 +12,11 @@ async def location(session: CommandSession):
     # 获取城市的天气预报
     # weather_report = await get_weather_of_city(city)
     # 向用户发送天气预报
-    data=session.ctx
-    pdb.set_trace()
-    name=data.get('user_id')
-    name_report="您的QQ号是"+str(name)
+    # data=session.ctx
+    # pdb.set_trace()
+    # name=data.get('user_id')
+    name_report="您的QQ号是"+str(get_qq(session))
+
     await session.send(name_report)
 
 
@@ -47,6 +48,11 @@ async def get_weather_of_city(city: str) -> str:
     # 这里简单返回一个字符串
     # 实际应用中，这里应该调用返回真实数据的天气 API，并拼接成天气预报内容
     return f'{city}的天气是……'
+
+def get_qq(session):
+    qq=session.ctx.get('user_id')
+    return qq
+
 
 @on_natural_language(keywords={'名字'},only_to_me=False)
 async def _(session: NLPSession):
