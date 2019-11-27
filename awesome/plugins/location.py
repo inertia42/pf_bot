@@ -1,6 +1,8 @@
 from nonebot import on_command, CommandSession
 from nonebot import on_natural_language, NLPSession, IntentCommand
+import moudles
 import pdb
+from nonebot.argparse import ArgumentParser
 
 
 # on_command 装饰器将函数声明为一个命令处理器
@@ -18,6 +20,17 @@ async def location(session: CommandSession):
     name_report="您的QQ号是"+str(get_qq(session))
 
     await session.send(name_report)
+@on_command('char', shell_like=True)
+async def _(session: CommandSession):
+    parser = ArgumentParser(session=session, usage=USAGE)
+    parser.add_argument('-a', '--add')
+    parser.add_argument('-l', '--list')
+
+    pdb.set_trace()
+
+    args = parser.parse_args(session.argv)
+    
+
 
 
 # weather.args_parser 装饰器将函数声明为 weather 命令的参数解析器
@@ -49,9 +62,9 @@ async def get_weather_of_city(city: str) -> str:
     # 实际应用中，这里应该调用返回真实数据的天气 API，并拼接成天气预报内容
     return f'{city}的天气是……'
 
-def get_qq(session):
-    qq=session.ctx.get('user_id')
-    return qq
+# def get_qq(session):
+    # qq=session.ctx.get('user_id')
+    # return qq
 
 
 @on_natural_language(keywords={'名字'},only_to_me=False)
