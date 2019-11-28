@@ -3,6 +3,8 @@ from nonebot import on_natural_language, NLPSession, IntentCommand
 from .moudles import *
 import pdb
 from nonebot.argparse import ArgumentParser
+import pickle
+import os
 
 USAGE = r"""
 创建计划任务
@@ -36,7 +38,29 @@ async def _(session: CommandSession):
     #pdb.set_trace()
     #print(parser.parse_args(['-a']))
     args = parser.parse_args(session.argv)
-    print(args)
+    filename=str(get_qq(session))+'.dat'
+    if args.add:
+        if not os.path.isfile(filename):
+            f = open(filename, 'wb')
+            # character_data={'default':1,1:{'name':args.add}j}
+            character_data=[-1,{'name':args.add}]
+            pickle.dump(character_data,f)
+            f.close()
+            await session.send("成功添加")
+            return
+        else:
+            f = open(filename,'wb')
+            character_data=pickle.load(f)
+            character_data.append({'name':args.add})
+            pickle.dump(character_data,f)
+            f.close()
+            await session.send("成功添加")
+            return
+
+
+
+
+
    
     
 
