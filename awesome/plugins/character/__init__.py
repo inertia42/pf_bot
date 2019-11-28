@@ -38,7 +38,7 @@ async def _(session: CommandSession):
     #pdb.set_trace()
     #print(parser.parse_args(['-a']))
     args = parser.parse_args(session.argv)
-    filename=str(get_qq(session))+'.dat'
+    filename="./data/"+str(get_qq(session))+'.dat'
     if args.add:
         if not os.path.isfile(filename):
             f = open(filename, 'wb')
@@ -49,13 +49,34 @@ async def _(session: CommandSession):
             await session.send("成功添加")
             return
         else:
-            f = open(filename,'wb')
+            f = open(filename,'rb')
             character_data=pickle.load(f)
+            f.close()
+            f = open(filename,'wb')
             character_data.append({'name':args.add})
             pickle.dump(character_data,f)
             f.close()
             await session.send("成功添加")
             return
+    
+    if args.list:
+        if not os.path.isfile(filename):
+            await session.send("无角色信息")
+            return
+        else:
+            f = open(filename,'rb')
+            character_data=pickle.load(f)
+            f.close()
+            name_report=""
+            for i in range(len(character_data)):
+                if i==0:
+                    name_report=name_report+character_data[character_data[0]]['name']+'\n'
+                else:
+                    name_report=name_report+character_data[i]['name']+'\n'
+            await session.send(name_report)
+            return
+
+
 
 
 
