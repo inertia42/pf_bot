@@ -1,9 +1,15 @@
 from nonebot import on_command, CommandSession
 from nonebot import on_natural_language, NLPSession, IntentCommand
-import moudles
+from .moudles import *
 import pdb
 from nonebot.argparse import ArgumentParser
 
+USAGE = r"""
+创建计划任务
+
+使用方法：
+XXXXXX
+""".strip()
 
 # on_command 装饰器将函数声明为一个命令处理器
 # 这里 weather 为命令的名字，同时允许使用别名「天气」「天气预报」「查天气」
@@ -22,13 +28,16 @@ async def location(session: CommandSession):
     await session.send(name_report)
 @on_command('char', shell_like=True)
 async def _(session: CommandSession):
-    parser = ArgumentParser(session=session, usage=USAGE)
-    parser.add_argument('-a', '--add')
+    parser = ArgumentParser(session=session ,usage=USAGE)
+    print(parser)
+    parser.add_argument('-a','--add')
     parser.add_argument('-l', '--list')
 
-    pdb.set_trace()
-
+    #pdb.set_trace()
+    #print(parser.parse_args(['-a']))
     args = parser.parse_args(session.argv)
+    print(args)
+   
     
 
 
