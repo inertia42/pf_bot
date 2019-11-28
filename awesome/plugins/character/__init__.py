@@ -38,7 +38,7 @@ async def _(session: CommandSession):
     #pdb.set_trace()
     #print(parser.parse_args(['-a']))
     args = parser.parse_args(session.argv)
-    filename="./data/"+str(get_qq(session))+'.dat'
+    filename="data/"+str(get_qq(session))+'.dat'
     if args.add:
         if not os.path.isfile(filename):
             f = open(filename, 'wb')
@@ -70,9 +70,9 @@ async def _(session: CommandSession):
             name_report=""
             for i in range(len(character_data)):
                 if i==0:
-                    name_report=name_report+character_data[character_data[0]]['name']+'\n'
+                    name_report=name_report+"默认角色："+character_data[character_data[0]]['name']
                 else:
-                    name_report=name_report+character_data[i]['name']+'\n'
+                    name_report=name_report+'\n'+str(i)+"："+character_data[i]['name']
             await session.send(name_report)
             return
 
