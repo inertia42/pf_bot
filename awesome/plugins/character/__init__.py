@@ -31,16 +31,16 @@ async def location(session: CommandSession):
 @on_command('char', shell_like=True)
 async def _(session: CommandSession):
     parser = ArgumentParser(session=session ,usage=USAGE)
-    print(parser)
+# 设定参数，add为添加新角色使用，list为列出新角色用
     parser.add_argument('-a','--add')
-    parser.add_argument('-l', '--list')
+    parser.add_argument('list')
+    parser.add_argument('-s','--switch')
 
     #pdb.set_trace()
-    #print(parser.parse_args(['-a']))
     args = parser.parse_args(session.argv)
-    filename="data/"+str(get_qq(session))+'.dat'
+    filename="data/"+str(get_qq(session))+'.dat' #设置储存角色信息的文件名
     if args.add:
-        if not os.path.isfile(filename):
+        if not os.path.isfile(filename): #判断文件是否存在
             f = open(filename, 'wb')
             # character_data={'default':1,1:{'name':args.add}j}
             character_data=[-1,{'name':args.add}]
@@ -72,17 +72,9 @@ async def _(session: CommandSession):
                 if i==0:
                     name_report=name_report+"默认角色："+character_data[character_data[0]]['name']
                 else:
-                    name_report=name_report+'\n'+str(i)+"："+character_data[i]['name']
+                    name_report=name_report+'\n'+str(i)+". "+character_data[i]['name']
             await session.send(name_report)
             return
-
-
-
-
-
-
-
-   
     
 
 
