@@ -5,12 +5,16 @@ import pdb
 from nonebot.argparse import ArgumentParser
 import pickle
 import os
+import re
 
 USAGE = r"""
-创建计划任务
+char [-a --add] [-l list] [-s --switch] [-h --help]
 
 使用方法：
-XXXXXX
+char -a [角色名称] 用于添加新角色的名称
+char -l list 用于列出已有角色及其序号
+char -s [角色序号] 用于更换默认角色，输入的角色序号对应于想要设置的默认角色
+char -h 用于打印使用帮助
 """.strip()
 
 # on_command 装饰器将函数声明为一个命令处理器
