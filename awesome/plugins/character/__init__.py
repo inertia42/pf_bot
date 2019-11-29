@@ -33,7 +33,7 @@ async def _(session: CommandSession):
     parser = ArgumentParser(session=session ,usage=USAGE)
 # 设定参数，add为添加新角色使用，list为列出新角色用
     parser.add_argument('-a','--add')
-    parser.add_argument('list')
+    parser.add_argument('-l','--list')
     parser.add_argument('-s','--switch')
 
     #pdb.set_trace()
@@ -75,6 +75,25 @@ async def _(session: CommandSession):
                     name_report=name_report+'\n'+str(i)+". "+character_data[i]['name']
             await session.send(name_report)
             return
+
+    if args.switch:
+        if not os.path.isfile(filename):
+            await session.send("无角色信息")
+            return
+        else:
+            if not re.match(r'[0-9]', args.switch):
+                await session.send('请使用角色对应的数字序号，具体的序号请使用char -l list 命令查询')
+                return
+            f = open(filename,'rb')
+            character_data=pickle.load(f)
+            f.close()
+            character_data[0]=int(args.switch)
+            f=open(filename,'wb')
+            pickle.dump(character_data,f)
+            f.close()
+            await session.send("已成功修改默认角色")
+            return
+
     
 
 
