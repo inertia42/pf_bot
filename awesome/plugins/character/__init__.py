@@ -28,7 +28,7 @@ async def location(session: CommandSession):
     name_report="您的QQ号是"+str(get_qq(session))
 
     await session.send(name_report)
-@on_command('char', shell_like=True)
+@on_command('char', shell_like=True,only_to_me=False)
 async def _(session: CommandSession):
     parser = ArgumentParser(session=session ,usage=USAGE)
 # 设定参数，add为添加新角色使用，list为列出新角色用
