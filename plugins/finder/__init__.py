@@ -5,9 +5,8 @@ from nonebot.helpers import render_expression as __
 
 from .data_source import get_name_of_data ,convert_html_to_image
 from datetime import timedelta
-SESSION_RUN_TIMEOUT = timedelta(seconds=30)
+SESSION_RUN_TIMEOUT = timedelta(seconds=30) # 会话过时时间
 
-bot = get_bot()
 __plugin_name__ = '数据查找'
 __plugin_usage__ = r"""
 查找法术
@@ -18,31 +17,23 @@ __plugin_usage__ = r"""
 
 @on_command('c', aliases=(),only_to_me=False)
 async def finder(session: CommandSession):
-    qun=session.ctx['group_id']
-    keyword = session.get('keyword', prompt='请输入关键词')
-    finder_name = await get_name_of_data(keyword)
-    convert_html_to_image(finder_name)
+    keyword = session.get('keyword', prompt='请输入关键词') # 提取关键词
+    finder_name = await get_name_of_data(keyword) # 搜索可匹配的数据
+    convert_html_to_image(finder_name) # 将所选的数据转换成图片
     #await session.send(message="[CQ:image,file=out.jpg]")
-    await session.send(__(("[CQ:image,file=out.jpg]",), **session.ctx))
-    #await bot.send_msg(group_id=qun,message="[CQ:image,file=out.jpg]")
-        # await session.send('请重新输入关键词')
+    await session.send(__(("[CQ:image,file=out.jpg]",), **session.ctx)) # 发送图片
 
 
 @finder.args_parser
 async def _(session: CommandSession):
-    stripped_arg = session.current_arg_text.strip()
-    stripped_arg = re.split(r'\s+',stripped_arg)
+    stripped_arg = session.current_arg_text.strip() # 清除空格
+    stripped_arg = re.split(r'\s+',stripped_arg) # 将输入的关键词按空格分割
 
     if session.is_first_run:
         if stripped_arg:
-            session.state['keyword'] = stripped_arg
+            session.state['keyword'] = stripped_arg   # 将关键词赋给session
         return
 
     if not stripped_arg:
         session.pause('请重新输入')
     session.state[session.current_key] = stripped_arg
-
-
-# on_natural_language 装饰器将函数声明为一个自然语言处理器
-# keywords 表示需要响应的关键词，类型为任意可迭代对象，元素类型为 str
-# 如果不传入 keywords，则响应所有没有被当作命令处理的消息
