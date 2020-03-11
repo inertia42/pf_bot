@@ -3,7 +3,7 @@ from nonebot import on_natural_language, NLPSession, IntentCommand
 import re
 from nonebot.helpers import render_expression as __
 
-from .data_source import get_name_of_data ,convert_html_to_image
+from .moudle import get_name_of_data ,convert_html_to_image
 from datetime import timedelta
 SESSION_RUN_TIMEOUT = timedelta(seconds=30) # 会话过时时间
 
@@ -19,6 +19,7 @@ __plugin_usage__ = r"""
 async def finder(session: CommandSession):
     keyword = session.get('keyword', prompt='请输入关键词') # 提取关键词
     finder_name = await get_name_of_data(keyword) # 搜索可匹配的数据
+    await check_the_list(session,finder_name)
     convert_html_to_image(finder_name) # 将所选的数据转换成图片
     #await session.send(message="[CQ:image,file=out.jpg]")
     await session.send(__(("[CQ:image,file=out.jpg]",), **session.ctx)) # 发送图片
@@ -37,3 +38,8 @@ async def _(session: CommandSession):
     if not stripped_arg:
         session.pause('请重新输入')
     session.state[session.current_key] = stripped_arg
+
+async def check_the_list(session:CommandSession,data_name:list):
+    if len(data_name) == 0:
+        session.finish('未查找到相关内容，请更换关键词后再次尝试。')
+    return
