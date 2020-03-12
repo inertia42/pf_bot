@@ -19,13 +19,14 @@ async def get_name_of_data(keywords: list):
         data_names=copy.deepcopy(data_names_copy)
     return data_names 
 
-def convert_html_to_image(data_name: list):
+def convert_html_to_image(session):
     '''
     输入参数为数组，内容为匹配到的数据名称。
     
     将选定的数据转换为图片
     '''
-    number = data_name[0][1]
+    data_name = session.state['final']
+    number = data_name[1]
     f=open('data/finder/crb_new','rb')
     raw_text=pickle.load(f)
     f.close()
