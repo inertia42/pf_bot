@@ -1,7 +1,8 @@
-from nonebot import on_command, CommandSession,get_bot
+from nonebot import on_command, CommandSession,get_bot,logger
 from nonebot import on_natural_language, NLPSession, IntentCommand
 import re
 from nonebot.helpers import render_expression as __
+
 
 from .moudle import get_name_of_data ,convert_html_to_image
 from datetime import timedelta
@@ -23,15 +24,17 @@ async def finder(session: CommandSession):
     convert_html_to_image(finder_name) # 将所选的数据转换成图片
     #await session.send(message="[CQ:image,file=out.jpg]")
     await session.send(__(("[CQ:image,file=out.jpg]",), **session.ctx)) # 发送图片
+    logger.info('Send a image')
 
 
 @finder.args_parser
 async def _(session: CommandSession):
     stripped_arg = session.current_arg_text.strip() # 清除空格
     stripped_arg = re.split(r'\s+',stripped_arg) # 将输入的关键词按空格分割
+    logger.debug("The keyword is splited to"+str(stripped_arg))
 
     if session.is_first_run:
-        if stripped_arg:
+        if stripped_arg[-1]:
             session.state['keyword'] = stripped_arg   # 将关键词赋给session
         return
 
