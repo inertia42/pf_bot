@@ -6,7 +6,7 @@ from nonebot.helpers import render_expression as __
 
 from .moudle import get_name_of_data ,convert_html_to_image
 from datetime import timedelta
-SESSION_RUN_TIMEOUT = timedelta(seconds=30) # 会话过时时间
+SESSION_RUN_TIMEOUT = timedelta(seconds=10) # 会话过时时间
 
 __plugin_name__ = '数据查找'
 __plugin_usage__ = r"""
@@ -70,7 +70,10 @@ async def check_the_list(session:CommandSession):
     else:
         reply="查找到了%d项结果\n"%data_len
         for i,name in enumerate(data_name):
-            reply+="%d.%s\n"%(i+1,name[0])
+            reply+="%d.%s\n"%(i+1,name['name'])
+            if i == 12:
+                reply+="匹配项太多，请更换关键词后重新查询"
+                session.finish(reply)
         reply+="请直接输入需要查询的序号"
         session.pause(reply)
     

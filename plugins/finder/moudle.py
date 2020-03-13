@@ -2,22 +2,36 @@ import pickle
 import re
 import copy
 import imgkit
+import pymysql.cursors
+from nonebot import logger
 
 async def get_name_of_data(keywords: list):
     '''
     输入参数为数组，内容为搜索关键词。
     '''
-    f = open('data/finder/crb_name','rb')
-    data_names = pickle.load(f)
-    f.close()
-    for keyword in keywords:  # 遍历关键词
-        data_names_copy=copy.deepcopy(data_names)
-        pattern = re.compile(r'%s'%keyword)
-        for spell_name in data_names: # 遍历搜索所有的法术
-            if not pattern.search(spell_name[0]):
-                data_names_copy.remove(spell_name)
-        data_names=copy.deepcopy(data_names_copy)
-    return data_names 
+    connection = pymysql.connect(host='127.0.0.1',
+    user='pfbot',
+    password='pfbot',
+    db='pathfinder',
+    charset='utf8mb4',
+    cursorclass=pymysql.cursors.DictCursor)
+    logger.debug(keywords)
+    try:
+        sql = ''
+        with connection.cursor() as cursor:
+            for i,subtitle in enumerate(keywords):
+                args = '%'+subtitle+'%'
+                if i==0:
+                    sql+="select * from data where name like '%s'"%args
+                else:
+                    sql+="and name like '%s'"%args
+            cursor.execute(sql) 
+            result = cursor.fetchall()
+            logger.debug(len(result))
+        connection.commit()
+    finally:
+        connection.close()
+        return result
 
 def convert_html_to_image(session):
     '''
@@ -25,12 +39,8 @@ def convert_html_to_image(session):
     
     将选定的数据转换为图片
     '''
-    data_name = session.state['final']
-    number = data_name[1]
-    f=open('data/finder/crb_new','rb')
-    raw_text=pickle.load(f)
-    f.close()
-    text=raw_text[number]
+    data = session.state['final']
+    text= data['raw']
     aa='''<html>
     <meta http-equiv="Content-Type" content="text/Html; charset=utf-8" />
     <head>'''
