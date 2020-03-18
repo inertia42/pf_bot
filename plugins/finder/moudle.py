@@ -4,6 +4,7 @@ import copy
 import imgkit
 import pymysql.cursors
 from nonebot import logger
+import os
 
 async def get_name_of_data(keywords: list):
     '''
@@ -40,17 +41,23 @@ def convert_html_to_image(session):
     将选定的数据转换为图片
     '''
     data = session.state['final']
-    text= data['raw']
-    aa='''<html>
-    <meta http-equiv="Content-Type" content="text/Html; charset=utf-8" />
-    <head>'''
-    text=aa+text
-    options = {
-        'width': 512,
-        'quality': 100,
-        'quiet': '',
-        'xvfb': '',
-        'encoding': 'utf8'
-        }
-    imgkit.from_string(text,'/dcoolq/data/image/out.jpg',options=options)
-    return
+    # img_id = str(data['id'])
+    img_id = data['name']
+    img_path = "/dcoolq/data/image/pf_finder/%s.jpg"%img_id
+    if os.path.exists(img_path):
+        return img_id
+    else:
+        text = data['raw']
+        aa='''<html>
+        <meta http-equiv="Content-Type" content="text/Html; charset=utf-8" />
+        <head>'''
+        text=aa+text
+        options = {
+            'width': 512,
+            'quality': 100,
+            'quiet': '',
+            'xvfb': '',
+            'encoding': 'utf8'
+            }
+        imgkit.from_string(text,img_path,options=options)
+        return img_id
