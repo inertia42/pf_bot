@@ -28,8 +28,12 @@ async def finder(session: CommandSession):
         session.state['name'] = await get_name_of_data(keyword) # 搜索可匹配的数据
         await check_the_list(session)
     img_name = convert_html_to_image(session) # 将所选的数据转换成图片
-    #await session.send(message="[CQ:image,file=out.jpg]")
-    await session.send(__(("[CQ:image,file=pf_finder/%s.jpg]"%img_name,), **session.ctx)) # 发送图片
+    img_name = re.sub(r'&','&amp;',img_name)
+    img_name = re.sub(r',','&#44;',img_name)
+    img_name = re.sub(r'\]','&#93;',img_name)
+    img_name = re.sub(r"\[",'&#91;',img_name)
+    await session.send(message=r"[CQ:image,file=pf_finder/%s.jpg]"%img_name)
+    #await session.send(__(("[CQ:image,file=pf_finder/%s.jpg]"%img_name,), **session.ctx)) # 发送图片
     logger.info('Send a image')
 
 
