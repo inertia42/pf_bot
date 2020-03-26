@@ -43,6 +43,7 @@ def convert_html_to_image(session):
     data = session.state['final']
     # img_id = str(data['id'])
     img_id = data['name']
+    img_id=re.sub(r'/','',img_id) #去除数据名中可能带有的"/"符号
     img_path = "/dcoolq/data/image/pf_finder/%s.jpg"%img_id
     if os.path.exists(img_path):
         return img_id
