@@ -15,6 +15,7 @@ downloads/
 eggs/
 .eggs/
 plugins/other.py
+data/
 lib/
 lib64/
 parts/

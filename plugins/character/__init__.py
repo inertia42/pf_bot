@@ -6,6 +6,7 @@ from nonebot.argparse import ArgumentParser
 import pickle
 import os
 import re
+from .characters import *
 
 USAGE = r"""
 char [-a --add] [-l list] [-s --switch] [-h --help]
@@ -43,111 +44,52 @@ async def location(session: CommandSession):
     name_report="您的QQ号是"+str(get_qq(session))
 
     await session.send(name_report)
-@on_command('char', shell_like=True,only_to_me=False)
+@on_command('char',only_to_me=False)
+async def char(session: CommandSession):
+    stripped_arg_raw = session.state['args']
+    if session.state['arg'] == '-a':
+        if session.is_first_run:
+            session.state['data']=dict()
+            session.pause('请输入人物名称')
+        if re.match(r"谢谢",stripped_arg_raw):
+            session.finish("已停止建立人物")
+        char_data = session.state['data']
+        char_data = get_input_data(char_data,['name',"种族"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['race',"性别"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['gender',"阵营"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['alignment',"职业及等级"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['class',"人物属性"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['ability',"生命值或生命骰"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['hp',"现有经验值"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['xp',"现有道具，如果没有可以填无"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['loot',"负重情况"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['weight',"现金数量"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['money',"人物背景"],session,stripped_arg_raw)
+        char_data = get_input_data(char_data,['backgroud',"声望值，若未获得声望值请填0"],session,stripped_arg_raw)
+        if 'repution' not in char_data:
+            char_data['repution'] = stripped_arg_raw
+        new = Character(session,str(session.ctx['user_id']))
+        new.save(char_data)
+        new.save_new_to_file()
+        session.finish("已建立人物")
+    if session.state['arg'] == '-l':
+        new = Character(session,str(session.ctx['user_id']))
+        char_list = new.get_list()
+        output = '第一个为默认角色\n'
+        for i,char_name in enumerate(char_list):
+            output+="%d.%s\n"%(i+1,char_name)
+        session.finish(output)
+
+@char.args_parser
 async def _(session: CommandSession):
-    parser = ArgumentParser(session=session ,usage=USAGE)
-# 设定参数，add为添加新角色使用，list为列出新角色用
-    parser.add_argument('-a','--add')
-    parser.add_argument('-l','--list')
-    parser.add_argument('-s','--switch')
-
-    #pdb.set_trace()
-    args = parser.parse_args(session.argv)
-    filename="data/"+str(get_qq(session))+'.dat' #设置储存角色信息的文件名
-    if args.add:
-        if not os.path.isfile(filename): #判断文件是否存在
-            f = open(filename, 'wb')
-            # character_data={'default':1,1:{'name':args.add}j}
-            character_data=[-1,{'name':args.add}]
-            pickle.dump(character_data,f)
-            f.close()
-            await session.send("成功添加")
-            return
-        else:
-            f = open(filename,'rb')
-            character_data=pickle.load(f)
-            f.close()
-            f = open(filename,'wb')
-            character_data.append({'name':args.add})
-            pickle.dump(character_data,f)
-            f.close()
-            await session.send("成功添加")
-            return
+    stripped_arg_raw = session.current_arg_text.strip() # 清除空格
+    session.state['args'] = stripped_arg_raw
+    if session.is_first_run:
+        session.state['arg'] = stripped_arg_raw
+            
+def get_input_data(char_data,info,session,arg):
+    if info[0] not in char_data:
+        char_data[info[0]] = arg
+        session.pause("请输入%s"%info[1])
+    return char_data
     
-    if args.list:
-        if not os.path.isfile(filename):
-            await session.send("无角色信息")
-            return
-        else:
-            f = open(filename,'rb')
-            character_data=pickle.load(f)
-            f.close()
-            name_report=""
-            for i in range(len(character_data)):
-                if i==0:
-                    name_report=name_report+"默认角色："+character_data[character_data[0]]['name']
-                else:
-                    name_report=name_report+'\n'+str(i)+". "+character_data[i]['name']
-            await session.send(name_report)
-            return
-
-    if args.switch:
-        if not os.path.isfile(filename):
-            await session.send("无角色信息")
-            return
-        else:
-            if not re.match(r'[0-9]', args.switch):
-                await session.send('请使用角色对应的数字序号，具体的序号请使用char -l list 命令查询')
-                return
-            f = open(filename,'rb')
-            character_data=pickle.load(f)
-            f.close()
-            character_data[0]=int(args.switch)
-            f=open(filename,'wb')
-            pickle.dump(character_data,f)
-            f.close()
-            await session.send("已成功修改默认角色")
-            return
-
-    
-
-
-
-# weather.args_parser 装饰器将函数声明为 weather 命令的参数解析器
-# 命令解析器用于将用户输入的参数解析成命令真正需要的数据
-# @location.args_parser
-# async def _(session: CommandSession):
-    # # 去掉消息首尾的空白符
-    # stripped_arg = session.current_arg_text.strip()
-
-    # if session.is_first_run:
-        # # 该命令第一次运行（第一次进入命令会话）
-        # if stripped_arg:
-            # # 第一次运行参数不为空，意味着用户直接将城市名跟在命令名后面，作为参数传入
-            # # 例如用户可能发送了：天气 南京
-            # session.state['city'] = stripped_arg
-        # return
-
-    # if not stripped_arg:
-        # # 用户没有发送有效的城市名称（而是发送了空白字符），则提示重新输入
-        # # 这里 session.pause() 将会发送消息并暂停当前会话（该行后面的代码不会被运行）
-        # session.pause('要查询的城市名称不能为空呢，请重新输入')
-
-    # # 如果当前正在向用户询问更多信息（例如本例中的要查询的城市），且用户输入有效，则放入会话状态
-    # session.state[session.current_key] = stripped_arg
-
-
-async def get_weather_of_city(city: str) -> str:
-    # 这里简单返回一个字符串
-    # 实际应用中，这里应该调用返回真实数据的天气 API，并拼接成天气预报内容
-    return f'{city}的天气是……'
-
-# def get_qq(session):
-    # qq=session.ctx.get('user_id')
-    # return qq
-
-
-@on_natural_language(keywords={'名字'},only_to_me=False)
-async def _(session: NLPSession):
-    # 返回意图命令，前两个参数必填，分别表示置信度和意图命令名
-    return IntentCommand(90.0, 'location')
