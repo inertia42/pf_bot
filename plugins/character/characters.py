@@ -30,6 +30,11 @@ class Character(object):
         for datas in self.before_data:
             char_list.append('-'.join((datas['race'],datas['class'],datas['name'])))
         return char_list
+
+    def get_default(self):
+        if not self.before_data:
+            self.session.finish("未录入任何人物信息!")
+        return self.before_data[0]
     
     def change(self,number):
         if number+1>len(self.before_data):

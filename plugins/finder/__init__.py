@@ -6,7 +6,7 @@ from nonebot.helpers import render_expression as __
 
 from .moudle import get_name_of_data ,convert_html_to_image
 from datetime import timedelta
-SESSION_RUN_TIMEOUT = timedelta(seconds=20) # 会话过时时间
+SESSION_RUN_TIMEOUT = timedelta(seconds=120) # 会话过时时间
 
 __plugin_name__ = '数据查找'
 __plugin_usage__ = r"""
