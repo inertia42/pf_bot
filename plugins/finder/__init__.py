@@ -40,6 +40,8 @@ async def finder(session: CommandSession):
 @finder.args_parser
 async def _(session: CommandSession):
     stripped_arg_raw = session.current_arg_text.strip() # 清除空格
+    if stripped_arg_raw == "谢谢":
+        session.finish("查询已结束")
     stripped_arg = re.split(r'\s+',stripped_arg_raw) # 将输入的关键词按空格分割
     logger.debug("The keyword is splited to"+str(stripped_arg))
 
