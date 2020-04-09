@@ -9,13 +9,14 @@ import re
 from .characters import *
 
 USAGE = r"""
-char [-a] [-l] [-h]
+char [-a] [-l] [-h] [-c 序号]
 
 使用方法：
 char    无参数，用于列出默认角色的所有信息
 char -a 用于交互式添加新角色
 char -l 用于列出已有角色及其序号
 char -h 用于列出使用帮助
+char -c [序号] 用于更换默认角色，必须加上角色序号
 """.strip()
 
 HELP = r"""
@@ -49,7 +50,7 @@ async def char(session: CommandSession):
     stripped_arg_raw = session.state['args']
     if not session.state['arg']:
         target_id = get_target_id(session)
-        logger.debug("The target_id is "+target_id)
+        logger.debug("The target_id is "+str(target_id))
         logger.debug(session.ctx)
         default = Character(session,str(target_id))
         default_char = default.get_default()
@@ -95,12 +96,19 @@ async def char(session: CommandSession):
         session.finish("已建立人物")
     if session.state['arg'] == '-l':
         new = Character(session,str(session.ctx['user_id']))
-        print(session.ctx)
         char_list = new.get_list()
-        output = '第一个为默认角色\n'
+        output = '第一个为默认角色'
         for i,char_name in enumerate(char_list):
-            output+="%d.%s\n"%(i+1,char_name)
+            output+="\n%d.%s"%(i+1,char_name)
         session.finish(output)
+
+    if re.match(r"-c",session.state['arg']):
+        char_number = re.findall(r"\d+?",session.state['arg'])
+        new = Character(session,str(session.ctx['user_id']))
+        if char_number:
+            new.change(int(char_number[0]))
+        session.finish("请按格式重新输入目标序号")
+
 
 @char.args_parser
 async def _(session: CommandSession):

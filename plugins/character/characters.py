@@ -37,9 +37,10 @@ class Character(object):
         return self.before_data[0]
     
     def change(self,number):
+        number = number-1
         if number+1>len(self.before_data):
             self.session.finish("该序号对应的人物不存在！")
-        self.before_data[number],self.before_data[1] = self.before_data[1],self.before_data[number]  
+        self.before_data[number],self.before_data[0] = self.before_data[0],self.before_data[number]  
         self.session.finish("修改完毕")
         return
 
