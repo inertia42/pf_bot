@@ -32,18 +32,6 @@ async def help(session: CommandSession):
     await session.send(HELP)
     return
 
-@on_command('name', aliases=('名字', '天气预报', '查天气'))
-async def location(session: CommandSession):
-    # 从会话状态（session.state）中获取城市名称（city），如果当前不存在，则询问用户
-    # city = session.get('city', prompt='你想查询哪个城市的天气呢？')
-    # 获取城市的天气预报
-    # weather_report = await get_weather_of_city(city)
-    # 向用户发送天气预报
-    # data=session.ctx
-    # pdb.set_trace()
-    # name=data.get('user_id')
-    name_report="您的QQ号是"+str(get_qq(session))
-
     await session.send(name_report)
 @on_command('char',only_to_me=False)
 async def char(session: CommandSession):
